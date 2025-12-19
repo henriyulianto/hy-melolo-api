@@ -1,0 +1,76 @@
+# ======================
+# Node.js dependencies
+# ======================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# lock files (opsional, kalau multi-dev environment)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ======================
+# Environment & secrets
+# ======================
+.env
+.env.local
+.env.production
+.env.development
+
+# ======================
+# Build & runtime output
+# ======================
+dist/
+build/
+out/
+.next/
+.cache/
+temp/
+logs/
+*.log
+
+# PM2 logs
+pids
+*.pid
+*.seed
+*.pid.lock
+pm2.log
+pm2-error.log
+
+# OS / editor / IDE noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Backup files
+*.bak
+*.tmp
+*.temp
+*.old
+
+# Uploads & temp content
+uploads/
+public/uploads/
+
+# ======================
+# Optional
+# ======================
+
+# If using Docker
+docker-data/
+*.tar
+
+# If deploying with Vercel/Netlify
+.vercel/
+.netlify/
+
+# If using macOS/Linux watcher index
+*.watched
+
+# TypeScript (kalau pakai ts nanti)
+*.tsbuildinfo
