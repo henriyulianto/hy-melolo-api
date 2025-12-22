@@ -31,6 +31,7 @@ const ALLOWED_ORIGINS = [
   // development
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'https://duniadrama-hy.vercel.app'
   // live
 ]
 const CELL_IDS = {
