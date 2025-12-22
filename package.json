@@ -1,29 +1,20 @@
 {
-  "name": "hy-melolo-api",
-  "version": "1.0.0",
-  "description": "HY Melolo API",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/henriyulianto/hy-melolo-api.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/henriyulianto/hy-melolo-api/issues"
-  },
-  "homepage": "https://github.com/henriyulianto/hy-melolo-api#readme",
   "dependencies": {
     "axios": "^1.13.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "heic-convert": "^2.1.0"
   },
+  "name": "HY Melolo API",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "devDependencies": {
     "@types/heic-convert": "^2.1.0"
   }
