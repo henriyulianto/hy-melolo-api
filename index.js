@@ -443,7 +443,7 @@ app.get('/video', async (req, res) => {
   try {
     const headers = commonHeaders;
     if (getUrl) {
-      headers.Accept = 'text/plain';
+      res.contentType = 'text/plain';
     }
     const params = commonParams;
     params._rticket = generate_rticket();
