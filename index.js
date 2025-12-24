@@ -442,9 +442,6 @@ app.get('/video', async (req, res) => {
 
   try {
     const headers = commonHeaders;
-    if (getUrl) {
-      res.setHeader('Content Type', 'text/plain');
-    }
     const params = commonParams;
     params._rticket = generate_rticket();
 
@@ -491,9 +488,14 @@ app.get('/video', async (req, res) => {
       summary,
       raw: data,
     });
-    const videoUrl = data.data.main_url;
 
-    return getUrl ? videoUrl : resJson;
+    if (getUrl) {
+      res.setHeader('Content Type', 'text/plain');
+      res.status(200).send(data.data.main_url);
+      return data.data.main_url;
+    }
+
+    return resJson;
   } catch (err) {
     console.error('/video error:', err.message);
     return res.status(500).json({ error: 'Internal error', detail: err.message });
