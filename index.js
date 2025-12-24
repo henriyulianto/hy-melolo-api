@@ -442,6 +442,9 @@ app.get('/video', async (req, res) => {
 
   try {
     const headers = commonHeaders;
+    if (getUrl) {
+      headers.Accept = 'text/plain';
+    }
     const params = commonParams;
     params._rticket = generate_rticket();
 
@@ -490,7 +493,7 @@ app.get('/video', async (req, res) => {
     });
     const videoUrl = data.data.main_url;
 
-    return resJson;
+    return getUrl ? videoUrl : resJson;
   } catch (err) {
     console.error('/video error:', err.message);
     return res.status(500).json({ error: 'Internal error', detail: err.message });
