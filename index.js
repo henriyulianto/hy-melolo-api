@@ -31,7 +31,8 @@ const ALLOWED_ORIGINS = [
   // development
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'https://duniadrama-hy.vercel.app'
+  'https://duniadrama.vercel.app',
+  'https://dramakita-ochre.vercel.app',
   // live
 ]
 const CELL_IDS = {
@@ -433,6 +434,7 @@ app.get('/series', async (req, res) => {
 
 app.get('/video', async (req, res) => {
   const videoId = req.query.video_id;
+  const getUrl = req.query.get_url;
   if (!videoId) {
     return res.status(400).json({ error: 'Parameter ?video_id wajib diisi' });
   }
@@ -481,10 +483,13 @@ app.get('/video', async (req, res) => {
       video_id: String(videoId),
     };
 
-    return res.json({
+    const resJson = res.json({
       summary,
       raw: data,
     });
+    const videoUrl = data.data.main_url;
+
+    return resJson;
   } catch (err) {
     console.error('/video error:', err.message);
     return res.status(500).json({ error: 'Internal error', detail: err.message });
