@@ -18,6 +18,7 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const heicConvert = require('heic-convert');
+const http = require('http');
 const app = express();
 const PORT = process.env.PORT || 8006;
 
@@ -542,8 +543,17 @@ app.get('/video-url', async (req, res) => {
       duration: data.data?.duration,
       video_id: String(videoId),
     };
+    const videoUrl = data.data.main_url;
 
-    return res.status(200).sendFile(data.data.main_url);
+    http.get(videoUrl, (remoteResponse) => {
+      // Pipe the remote file's response stream to the client's response stream
+      remoteResponse.pipe(res);
+    }).on('error', (err) => {
+      console.error(err);
+      res.status(500).send('Error fetching remote file');
+    });
+
+    //return res.status(200).sendFile(data.data.main_url);
   } catch (err) {
     console.error('/video error:', err.message);
     return res.status(500).send(`Internal error: ${err.message}`);
