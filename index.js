@@ -493,7 +493,7 @@ app.get('/video', express.json(), async (req, res) => {
   }
 });
 
-app.get('/video-url', express.text(), async (req, res) => {
+app.get('/video-url', async (req, res) => {
   const videoId = req.query.video_id;
   if (!videoId) {
     return res.status(400).send('Parameter ?video_id wajib diisi');
@@ -543,7 +543,7 @@ app.get('/video-url', express.text(), async (req, res) => {
       video_id: String(videoId),
     };
 
-    return res.status(200).send(data.data.main_url);
+    return res.status(200).sendFile(data.data.main_url);
   } catch (err) {
     console.error('/video error:', err.message);
     return res.status(500).send(`Internal error: ${err.message}`);
