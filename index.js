@@ -42,7 +42,7 @@ const CELL_IDS = {
 }
 const commonHeaders = {
   Host: this.DEFAULT_HOST,
-  Accept: 'application/json; charset=utf-8,application/x-protobuf',
+  //Accept: 'application/json; charset=utf-8,application/x-protobuf',
   'X-Xs-From-Web': 'false',
   'Age-Range': '8',
   'Sdk-Version': '2',
@@ -94,14 +94,14 @@ app.use(cors({
   origin: ALLOWED_ORIGINS,
   credentials: true,
 }));
-app.use(express.json());
+//app.use(express.json());
 
 // ============================================================
 // Proxy-img
 // ============================================================
 // GET /proxy-img?url=<BASE_URL>&x-expires=...&x-signature=...
 
-app.get('/proxy-img', async (req, res) => {
+app.get('/proxy-img', express.json(), async (req, res) => {
   const { url, ...rest } = req.query;
 
   if (!url) {
@@ -194,7 +194,7 @@ app.get('/proxy-img', async (req, res) => {
 // ============================================================
 // Trending Bookmall
 // ============================================================
-app.get(['/bookmall', '/bookmall/trending', '/trending'], async (_req, res) => {
+app.get(['/bookmall', '/bookmall/trending', '/trending'], express.json(), async (_req, res) => {
   try {
     const headers = commonHeaders;
     const params = commonParams;
@@ -234,7 +234,7 @@ app.get(['/bookmall', '/bookmall/trending', '/trending'], async (_req, res) => {
 // Latest Bookmall
 // ============================================================
 
-app.get(['/bookmall/latest', '/latest'], async (_req, res) => {
+app.get(['/bookmall/latest', '/latest'], express.json(), async (_req, res) => {
   try {
     const headers = commonHeaders;
     const params = commonParams;
@@ -274,7 +274,7 @@ app.get(['/bookmall/latest', '/latest'], async (_req, res) => {
 // Search 
 // ============================================================
 
-app.get('/search', async (req, res) => {
+app.get('/search', express.json(), async (req, res) => {
   const query = req.query.query;
   if (!query) {
     return res.status(400).json({ error: 'Parameter ?query wajib diisi' });
@@ -345,7 +345,7 @@ app.get('/search', async (req, res) => {
 // Series Detail
 // ============================================================
 
-app.get('/series', async (req, res) => {
+app.get('/series', express.json(), async (req, res) => {
   const seriesId = req.query.series_id;
   if (!seriesId) {
     return res.status(400).json({ error: 'Parameter ?series_id wajib diisi' });
@@ -433,9 +433,8 @@ app.get('/series', async (req, res) => {
 // Video Model
 // ============================================================
 
-app.get('/video', async (req, res) => {
+app.get('/video', express.json(), async (req, res) => {
   const videoId = req.query.video_id;
-  const getUrl = req.query.get_url;
   if (!videoId) {
     return res.status(400).json({ error: 'Parameter ?video_id wajib diisi' });
   }
@@ -484,21 +483,70 @@ app.get('/video', async (req, res) => {
       video_id: String(videoId),
     };
 
-    const resJson = res.json({
+    return res.json({
       summary,
       raw: data,
     });
-
-    if (getUrl) {
-      res.setHeader('Content Type', 'text/plain');
-      res.status(200).send(data.data.main_url);
-      return data.data.main_url;
-    }
-
-    return resJson;
   } catch (err) {
     console.error('/video error:', err.message);
     return res.status(500).json({ error: 'Internal error', detail: err.message });
+  }
+});
+
+app.get('/video-url', express.text(), async (req, res) => {
+  const videoId = req.query.video_id;
+  if (!videoId) {
+    return res.status(400).send('Parameter ?video_id wajib diisi');
+  }
+
+  try {
+    const headers = commonHeaders;
+    const params = commonParams;
+    params._rticket = generate_rticket();
+
+    const jsonData = {
+      biz_param: {
+        detail_page_version: 0,
+        device_level: 3,
+        from_video_id: '',
+        need_all_video_definition: true,
+        need_mp4_align: false,
+        source: 4,
+        use_os_player: false,
+        video_id_type: 0,
+        video_platform: 3,
+      },
+      video_id: String(videoId),
+    };
+
+    const resp = await axios.post(
+      `${BASE_URL}/novel/player/video_model/v1/`,
+      jsonData,
+      { headers, params, timeout: 30000 },
+    );
+
+    if (resp.status !== 200) {
+      return upstreamError(res, resp);
+    }
+
+    const data = resp.data;
+    const baseResp = data.BaseResp || {};
+
+    if (baseResp.StatusCode !== 0 && baseResp.StatusCode != null) {
+      return res.status(400).json({
+        error: baseResp.StatusMessage || 'Upstream base error',
+      });
+    }
+
+    const summary = {
+      duration: data.data?.duration,
+      video_id: String(videoId),
+    };
+
+    return res.status(200).send(data.data.main_url);
+  } catch (err) {
+    console.error('/video error:', err.message);
+    return res.status(500).send(`Internal error: ${err.message}`);
   }
 });
 
